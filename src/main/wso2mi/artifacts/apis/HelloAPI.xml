@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api xmlns="http://ws.apache.org/ns/synapse" name="HelloAPI" context="/hello">
+    <resource methods="GET" uri-template="/">
+        <inSequence>
+            <!-- Log visible dans WSO2 MI -->
+            <log level="custom">
+                <property name="INFO_LOG" value="=== TEST REUSSI: APPEL API HELLO ==="/>
+            </log>
+
+            <!-- Reponse JSON -->
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                    "status": "SUCCESS",
+                    "message": "Bienvenue sur WSO2 MI en local !"
+                    }
+                </format>
+                <args/>
+            </payloadFactory>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+</api>

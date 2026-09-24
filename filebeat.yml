@@ -1,0 +1,19 @@
+filebeat.inputs:
+  - type: container
+    paths:
+      - '/var/lib/docker/containers/*/*.log'
+    processors:
+      - add_docker_metadata: ~
+      - drop_event:
+          when:
+            not:
+              equals:
+                container.name: "wso2mi"
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  index: "wso2-logs-%{+yyyy.MM.dd}"
+
+setup.template.name: "wso2-logs"
+setup.template.pattern: "wso2-logs-*"
+setup.ilm.enabled: false

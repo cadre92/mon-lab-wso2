@@ -1,0 +1,91 @@
+services:
+  # 1. Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - wso2-net
+
+  # 2. Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.10
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - wso2-net
+
+  # 3. WSO2 Micro Integrator
+  wso2mi:
+    image: wso2/wso2mi:4.2.0
+    container_name: wso2mi
+    ports:
+      - "8290:8290"
+      - "9164:9164"
+    volumes:
+      - wso2-logs:/home/wso2carbon/wso2-mi/repository/logs
+      - wso2-deploy:/home/wso2carbon/wso2-mi/repository/deployment/server/synapse-configs/default/api
+    environment:
+      - JVM_MEM_OPTS=-Xms512m -Xmx512m
+    networks:
+      - wso2-net
+
+  # 4. Filebeat (Agent de collecte des logs WSO2 -> Elasticsearch)
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.17.10
+    container_name: filebeat
+    user: root
+    volumes:
+      - wso2-logs:/usr/share/filebeat/wso2-logs:ro
+    entrypoint: >
+      sh -c "
+      filebeat config create --type log --path '/usr/share/filebeat/wso2-logs/*.log' --output elasticsearch --es http://elasticsearch:9200
+      filebeat -e
+      "
+    depends_on:
+      - elasticsearch
+      - wso2mi
+    networks:
+      - wso2-net
+
+  # 5. Jenkins (Serveur de CI/CD)
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - wso2-deploy:/wso2-deploy
+    networks:
+      - wso2-net
+  # BDD pour simuler SmartVista
+  smartvista-db:
+    image: postgres:15-alpine
+    container_name: smartvista-db
+    environment:
+      POSTGRES_DB: smartvista
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      - wso2-net
+volumes:
+  wso2-logs:
+  wso2-deploy:
+  jenkins-data:
+
+networks:
+  wso2-net:
+    driver: bridge

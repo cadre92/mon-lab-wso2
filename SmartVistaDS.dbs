@@ -1,0 +1,26 @@
+<data name="SmartVistaDS" serviceNamespace="http://ws.wso2.org/dataservice">
+    <config id="SmartVistaDataSource">
+        <property name="driverClassName">org.postgresql.Driver</property>
+        <property name="url">jdbc:postgresql://smartvista-db:5432/smartvista</property>
+        <property name="username">admin</property>
+        <property name="password">password</property>
+    </config>
+
+    <!-- Query pour récupérer les cartes d'un client -->
+    <query id="GetCardsByClientQuery" useConfig="SmartVistaDataSource">
+        <sql>SELECT card_number, status, balance FROM cards WHERE client_id = :client_id</sql>
+        <result rowName="card" element="cards">
+            <element name="cardNumber" column="card_number"/>
+            <element name="status" column="status"/>
+            <element name="balance" column="balance"/>
+        </result>
+        <param name="client_id" sqlType="STRING"/>
+    </query>
+
+    <!-- Resource REST -->
+    <resource method="GET" path="cards/{client_id}">
+        <call-query href="GetCardsByClientQuery">
+            <with-param name="client_id" query-param="client_id"/>
+        </call-query>
+    </resource>
+</data>
