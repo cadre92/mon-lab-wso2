@@ -13,13 +13,13 @@ pipeline {
             steps {
                 echo '=== Déploiement automatisé des artefacts WSO2 MI ==='
                 script {
-                    // 1. Déploiement des APIs
+                    // 1. Déploiement des APIs XML
                     sh 'mkdir -p /wso2-deploy/repository/deployment/server/synapse-configs/default/api'
                     sh 'cp -r src/main/wso2mi/artifacts/apis/* /wso2-deploy/repository/deployment/server/synapse-configs/default/api/'
 
                     // 2. Déploiement des Data Services (.dbs)
                     sh 'mkdir -p /wso2-deploy/repository/deployment/server/synapse-configs/default/dataservices'
-                    sh 'cp -r src/main/wso2mi/artifacts/data-services/* /wso2-deploy/repository/deployment/server/synapse-configs/default/dataservices/ 2>/dev/null || true'
+                    sh 'cp -r src/main/wso2mi/artifacts/data-services/* /wso2-deploy/repository/deployment/server/synapse-configs/default/dataservices/'
                 }
             }
         }
