@@ -11,10 +11,10 @@ pipeline {
 
         stage('Deploy to WSO2 MI') {
             steps {
-                echo '=== 2. Déploiement des artefacts dans WSO2 MI ==='
+                echo '=== Déploiement des artefacts vers WSO2 MI ==='
                 script {
-                    // Copie automatique des API et Data Services vers le volume partagé WSO2
-                    sh 'cp -r src/main/wso2mi/artifacts/* /wso2-deploy/'
+                    // Copie des APIs vers le dossier partagé / monté
+                    sh 'cp -r src/main/wso2mi/artifacts/apis/* /wso2-deploy/repository/deployment/server/synapse-configs/default/api/ 2>/dev/null || cp -r src/main/wso2mi/artifacts/apis/* /wso2-deploy/'
                 }
             }
         }
