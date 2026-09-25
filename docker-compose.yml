@@ -33,7 +33,7 @@ services:
       - "9164:9164"
     volumes:
       - wso2-logs:/home/wso2carbon/wso2-mi/repository/logs
-      - wso2-deploy:/home/wso2carbon/wso2-mi/repository/deployment/server/synapse-configs/default/api
+      - wso2-deploy:/home/wso2carbon/wso2-mi/repository/deployment/server/synapse-configs/default
     environment:
       - JVM_MEM_OPTS=-Xms512m -Xmx512m
     networks:
