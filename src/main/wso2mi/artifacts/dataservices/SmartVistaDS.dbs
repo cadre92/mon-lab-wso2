@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <data name="SmartVistaDS" serviceNamespace="http://ws.wso2.org/dataservice">
     <config id="SmartVistaDataSource">
         <property name="driverClassName">org.postgresql.Driver</property>
@@ -6,7 +7,7 @@
         <property name="password">password</property>
     </config>
 
-    <!-- Query pour récupérer les cartes d'un client -->
+    <!-- Query pour recuperer les cartes d un client -->
     <query id="GetCardsByClientQuery" useConfig="SmartVistaDataSource">
         <sql>SELECT card_number, status, balance FROM cards WHERE client_id = :client_id</sql>
         <result rowName="card" element="cards">

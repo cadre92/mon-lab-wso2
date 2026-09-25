@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api xmlns="http://ws.apache.org/ns/synapse" name="SmartVistaAPI" context="/services/SmartVistaDS">
+    <resource methods="GET" uri-template="/cards/{client_id}">
+        <inSequence>
+            <log level="custom">
+                <property name="INFO_LOG" value="=== APPEL API SMARTVISTA CARDS ==="/>
+                <property name="CLIENT_ID" expression="get-property('uri.var.client_id')"/>
+            </log>
+
+            <dblookup>
+                <connection>
+                    <pool>
+                        <driver>org.postgresql.Driver</driver>
+                        <url>jdbc:postgresql://smartvista-db:5432/smartvista</url>
+                        <user>admin</user>
+                        <password>password</password>
+                    </pool>
+                </connection>
+                <statement>
+                    <sql>SELECT card_number, status, balance FROM cards WHERE client_id = ?</sql>
+                    <parameter expression="get-property('uri.var.client_id')" type="VARCHAR"/>
+                    <result name="card_number" column="card_number"/>
+                    <result name="status" column="status"/>
+                    <result name="balance" column="balance"/>
+                </statement>
+            </dblookup>
+
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "cards": [
+                            {
+                                "cardNumber": "$1",
+                                "status": "$2",
+                                "balance": "$3"
+                            }
+                        ]
+                    }
+                </format>
+                <args>
+                    <arg expression="get-property('card_number')"/>
+                    <arg expression="get-property('status')"/>
+                    <arg expression="get-property('balance')"/>
+                </args>
+            </payloadFactory>
+
+            <property name="messageType" value="application/json" scope="transport"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence>
+            <log level="custom">
+                <property name="ERROR_LOG" value="=== ERREUR API SMARTVISTA ==="/>
+                <property name="ERROR_MESSAGE" expression="get-property('ERROR_MESSAGE')"/>
+            </log>
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "error": "Erreur lors de la récupération des cartes",
+                        "message": "$1"
+                    }
+                </format>
+                <args>
+                    <arg expression="get-property('ERROR_MESSAGE')"/>
+                </args>
+            </payloadFactory>
+            <property name="messageType" value="application/json" scope="transport"/>
+            <property name="HTTP_SC" value="500" scope="transport"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>

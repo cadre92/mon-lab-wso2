@@ -32,8 +32,10 @@ services:
       - "8290:8290"
       - "9164:9164"
     volumes:
-      - wso2-logs:/home/wso2carbon/wso2-mi/repository/logs
-      - wso2-deploy:/home/wso2carbon/wso2-mi/repository/deployment/server/synapse-configs/default
+      - wso2-logs:/home/wso2carbon/wso2mi-4.2.0/repository/logs
+      - ./src/main/wso2mi/artifacts/api:/home/wso2carbon/wso2mi-4.2.0/repository/deployment/server/synapse-configs/default/api
+      - ./src/main/wso2mi/artifacts/dataservices:/home/wso2carbon/wso2mi-4.2.0/repository/deployment/server/synapse-configs/default/dataservices
+      - ./drivers/postgresql-42.7.3.jar:/home/wso2carbon/wso2mi-4.2.0/lib/postgresql-42.7.3.jar
     environment:
       - JVM_MEM_OPTS=-Xms512m -Xmx512m
     networks:

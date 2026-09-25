@@ -1,14 +1,9 @@
 filebeat.inputs:
-  - type: container
+  - type: log
     paths:
-      - '/var/lib/docker/containers/*/*.log'
+      - '/usr/share/filebeat/wso2-logs/*.log'
     processors:
       - add_docker_metadata: ~
-      - drop_event:
-          when:
-            not:
-              equals:
-                container.name: "wso2mi"
 
 output.elasticsearch:
   hosts: ["http://elasticsearch:9200"]
